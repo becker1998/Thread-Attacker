@@ -1,0 +1,101 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package threadattacker;
+
+//The content of this file defines a Java class named 'ThreadBot' 
+//This class inherits from the predefined Java class Thread.
+
+public class ThreadBot extends Thread
+{
+
+	int Identity; //This integer variable will be the thread identifier
+        char init_char;
+	//Here we redefine the default constructor of this class.
+	//By default it has no arguments, but in this example
+	//We are using two arguments
+	public ThreadBot(int id, char c) 
+	{
+		//Here we retrieve the value of the identity passed by the main class
+		Identity = id;
+		//Here we retrieve the value of the character passed by the main class
+		//This character will be used by each thread as the first letter in the password
+		init_char = c;
+	}
+	
+	public void run()
+	{
+		        //create string that starts at the beginning of the alphabet
+            String end = "aaaa";
+            //retrieve the password generated
+            String password = ThreadAttacker.password;
+            char[] passwordC = password.toCharArray();
+            char[] p = (init_char + end).toCharArray();
+            int i = 4;
+            int iNext = 4;
+            //boolean var to determine if password is cracked
+            int crack = 0;
+            //loops while password guessing is incorrect
+            while (!String.valueOf(p).equals(password)){
+                //check to see which thread is runnning
+                if (Identity == 3){
+                    System.out.println(Identity + " " + String.valueOf(p));
+                }
+                //if password hasn't been guesssed
+                if (!String.valueOf(p).equals(password)){
+                    //if character is not 'z' then increase to next char
+                    if (p[i] != 'z'){
+                        p[i] = (char)(p[i]+1);
+                    }
+                    else{
+                        //while char is 'z'
+                        while (p[i] == 'z'){
+                       
+                            i--;
+                            iNext = i;
+                            
+                            if (i == 0){
+                                stop();
+                            }
+                        }
+                        //get next char
+                        p[iNext] = (char)(p[iNext]+1);
+                        //if we cracked the password
+                        if (String.valueOf(p).equals(password)){
+                            ThreadAttacker.found = true;
+                            System.out.println("Thread " + Identity + " cracked the password");
+                            System.out.println("Password cracked is: " + password);
+                            stop(); //stop the thread
+                        }
+                        else{
+                            i++;
+                            //determine the thread nd output current password
+                            while(p[i] == 'z' && i < 5){
+                                if (Identity == 3){
+                                    System.out.println("Thread 3 " + i + " " + String.valueOf(p));
+                                }
+                                p[i] = 'a';
+                                if (i < 4){
+                                    i++;
+                                }
+                            }
+                        }
+                    }
+                }
+                else{
+                    ThreadAttacker.found = true;
+                    System.out.println("Thread " + Identity + " cracked the password");
+                    System.out.println("Password cracked is: " + password);
+                }
+                if (String.valueOf(p).equals(password)){
+                    ThreadAttacker.found = true;
+                    System.out.println("Thread " + Identity + " cracked the password");
+                    System.out.println("Password cracked is: " + password);
+                    stop();
+                }
+            }
+        stop();
+	}
+}
